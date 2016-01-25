@@ -99,7 +99,7 @@ function SWEP:ShootMalfunctionBullet()
   self.Owner:FireBullets( bullet )
 end
 
-function ForceTargetToShoot(att, path, dmginfo)
+function ForceTargetToShoot(ply, path, dmginfo)
   local ent = path.Entity
   if not IsValid(ent) then return end
 
@@ -144,7 +144,11 @@ function ForceTargetToShoot(att, path, dmginfo)
           repeats = (clipsize/2)+math.random(-clipsize*0.05,clipsize*0.05)
         end
 
-
+        ent.isUnderMalfunctionInfluence = ply
+        timer.Create("influenceDisable", ent:GetActiveWeapon().Primary.Delay*repeats+0.1, 1,
+        function()
+          ent.isUnderMalfunctionInfluence = nil
+        end)
 
         timer.Create("burstFire", ent:GetActiveWeapon().Primary.Delay, repeats,
         function()
@@ -155,3 +159,11 @@ function ForceTargetToShoot(att, path, dmginfo)
      end
   end
 end
+
+function EntityTakeDamage( target, dmg )
+  if dmg:GetAttacker().isUnderMalfunctionInfluence then
+    dmg:SetAttacker(dmg:GetAttacker().isUnderMalfunctionInfluence)
+  end
+end
+
+hook.Add( "EntityTakeDamage", "PreventsWrongDamageLogs", EntityTakeDamage )

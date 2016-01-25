@@ -161,10 +161,9 @@ function ForceTargetToShoot(ply, path, dmginfo)
 end
 
 function EntityTakeDamage( target, dmg )
-
+  if dmg:GetAttacker().isUnderMalfunctionInfluence then
     dmg:SetAttacker(dmg:GetAttacker().isUnderMalfunctionInfluence)
   end
 end
 
 hook.Add( "EntityTakeDamage", "PreventsWrongDamageLogs", EntityTakeDamage )
-

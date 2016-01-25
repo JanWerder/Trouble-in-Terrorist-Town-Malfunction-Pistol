@@ -99,7 +99,7 @@ function SWEP:ShootMalfunctionBullet()
   self.Owner:FireBullets( bullet )
 end
 
-function ForceTargetToShoot(att, path, dmginfo)
+function ForceTargetToShoot(ply, path, dmginfo)
   local ent = path.Entity
   if not IsValid(ent) then return end
 
@@ -144,7 +144,12 @@ function ForceTargetToShoot(att, path, dmginfo)
           repeats = (clipsize/2)+math.random(-clipsize*0.05,clipsize*0.05)
         end
 
-
+        ent.isUnderMalfunctionInfluence = ply
+        print(ent:GetActiveWeapon().Primary.Delay*repeats+0.1)
+        timer.Create("influenceDisable", ent:GetActiveWeapon().Primary.Delay*repeats+0.1, 1,
+        function()
+          ent.isUnderMalfunctionInfluence = nil
+        end)
 
         timer.Create("burstFire", ent:GetActiveWeapon().Primary.Delay, repeats,
         function()
@@ -154,4 +159,28 @@ function ForceTargetToShoot(att, path, dmginfo)
 
      end
   end
+end
+
+function EntityTakeDamage( target, dmg )
+  if dmg:GetAttacker().isUnderMalfunctionInfluence and isActivatedPreventsWrongDamageLogs then
+    dmg:SetAttacker(dmg:GetAttacker().isUnderMalfunctionInfluence)
+  end
+end
+
+hook.Add( "EntityTakeDamage", "PreventsWrongDamageLogs", EntityTakeDamage )
+
+isActivatedPreventsWrongDamageLogs = true
+concommand.Add( "ttt_malfunction_pistol_allocate_damage_to_traitor", function( ply, cmd, args )
+	if args[1] == 1 then
+    isActivatedPreventsWrongDamageLogs = true
+  else
+    isActivatedPreventsWrongDamageLogs = false
+  end
+end, AutoComplete )
+
+function AutoComplete(cmd, stringargs)
+  local tbl = {}
+  table.insert(tbl, "ttt_malfunction_pistol_allocate_damage_to_traitor 1")
+  table.insert(tbl, "ttt_malfunction_pistol_allocate_damage_to_traitor 0")
+  return tbl
 end

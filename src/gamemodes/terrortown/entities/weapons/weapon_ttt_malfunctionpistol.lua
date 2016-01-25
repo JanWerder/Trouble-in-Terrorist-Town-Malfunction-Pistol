@@ -145,10 +145,6 @@ function ForceTargetToShoot(ply, path, dmginfo)
         end
 
         ent.isUnderMalfunctionInfluence = ply
-<<<<<<< HEAD
-=======
-        print(ent:GetActiveWeapon().Primary.Delay*repeats+0.1)
->>>>>>> origin/master
         timer.Create("influenceDisable", ent:GetActiveWeapon().Primary.Delay*repeats+0.1, 1,
         function()
           ent.isUnderMalfunctionInfluence = nil
@@ -165,32 +161,10 @@ function ForceTargetToShoot(ply, path, dmginfo)
 end
 
 function EntityTakeDamage( target, dmg )
-<<<<<<< HEAD
-  if dmg:GetAttacker().isUnderMalfunctionInfluence then
-=======
-  if dmg:GetAttacker().isUnderMalfunctionInfluence and isActivatedPreventsWrongDamageLogs then
->>>>>>> origin/master
+
     dmg:SetAttacker(dmg:GetAttacker().isUnderMalfunctionInfluence)
   end
 end
 
 hook.Add( "EntityTakeDamage", "PreventsWrongDamageLogs", EntityTakeDamage )
-<<<<<<< HEAD
-=======
 
-isActivatedPreventsWrongDamageLogs = true
-concommand.Add( "ttt_malfunction_pistol_allocate_damage_to_traitor", function( ply, cmd, args )
-	if args[1] == 1 then
-    isActivatedPreventsWrongDamageLogs = true
-  else
-    isActivatedPreventsWrongDamageLogs = false
-  end
-end, AutoComplete )
-
-function AutoComplete(cmd, stringargs)
-  local tbl = {}
-  table.insert(tbl, "ttt_malfunction_pistol_allocate_damage_to_traitor 1")
-  table.insert(tbl, "ttt_malfunction_pistol_allocate_damage_to_traitor 0")
-  return tbl
-end
->>>>>>> origin/master
